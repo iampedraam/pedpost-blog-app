@@ -1,4 +1,3 @@
-````markdown
 # PedPost 🖋️
 
 A modern, minimalist blog application built with **Node.js**, **Express**, and **EJS**.  
