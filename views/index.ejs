@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<section class="creation-area">
+    <div class="card creation-card">
+        <h2>Create a PedPost</h2>
+        <form action="/posts" method="POST" class="stacked-form">
+            <input type="text" name="title" placeholder="Title" required>
+            <input type="text" name="publisher" placeholder="Your Name (Publisher)" required>
+            <textarea name="content" placeholder="Write your content..." rows="5" required></textarea>
+            <button type="submit" class="btn btn-primary">Publish Now</button>
+        </form>
+    </div>
+</section>
+
+<section class="posts-grid">
+    <% posts.forEach(post => { %>
+        <article class="post-card">
+            <div class="card-body">
+                <h3 class="post-title"><%= post.title %></h3>
+                <p class="post-meta">Published by: <strong><%= post.publisher %></strong></p>
+                <p class="post-excerpt"><%= post.content %></p>
+            </div>
+            <div class="card-footer actions">
+                <a href="/edit/<%= post.id %>" class="btn-text edit">Edit</a>
+                <form action="/delete/<%= post.id %>?_method=DELETE" method="POST" style="display:inline;">
+                    <button class="btn-text delete">Delete</button>
+                </form>
+            </div>
+        </article>
+    <% }) %>
+</section>
+
+<%- include('partials/footer') %>
