@@ -4,30 +4,85 @@
     <div class="card creation-card">
         <h2>Create a PedPost</h2>
         <form action="/posts" method="POST" class="stacked-form">
-            <input type="text" name="title" placeholder="Title" required>
-            <input type="text" name="publisher" placeholder="Your Name (Publisher)" required>
-            <textarea name="content" placeholder="Write your content..." rows="5" required></textarea>
+            <input type="text" name="title" placeholder="Title (Max 50)" maxlength="50" required>
+            <input type="text" name="publisher" placeholder="Publisher Name (Max 30)" maxlength="30" required>
+            
+            <textarea id="postContent" name="content" placeholder="What's happening?" maxlength="2500" required></textarea>
+            <p id="charCount" style="font-size: 0.8rem; text-align: right; color: #666;">0 / 2500</p>
+            
             <button type="submit" class="btn btn-primary">Publish Now</button>
         </form>
     </div>
 </section>
 
 <section class="posts-grid">
-    <% posts.forEach(post => { %>
+    <% posts.forEach((post) => { %>
         <article class="post-card">
             <div class="card-body">
                 <h3 class="post-title"><%= post.title %></h3>
-                <p class="post-meta">Published by: <strong><%= post.publisher %></strong></p>
-                <p class="post-excerpt"><%= post.content %></p>
+                <p class="post-meta">By: <%= post.publisher %></p>
+                
+                <p class="post-text">
+                    <%= post.content.substring(0, 100) %>...
+                    
+                    <span id="store-<%= post.id %>" style="display:none;"><%= post.content %></span>
+
+                    <button 
+                        class="read-more-link" 
+                        data-title="<%= post.title %>" 
+                        onclick="openModal(this, '<%= post.id %>')">
+                        Read More
+                    </button>
+                </p>
             </div>
+
             <div class="card-footer actions">
                 <a href="/edit/<%= post.id %>" class="btn-text edit">Edit</a>
                 <form action="/delete/<%= post.id %>?_method=DELETE" method="POST" style="display:inline;">
-                    <button class="btn-text delete">Delete</button>
+                    <button class="btn-text delete" onclick="return confirm('Delete this post?')">Delete</button>
                 </form>
             </div>
         </article>
     <% }) %>
 </section>
+
+<div id="postModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle"></h2>
+        <div id="modalBody" style="white-space: pre-wrap; margin-top: 20px;"></div>
+    </div>
+</div>
+
+<script>
+    // Character Counter
+    const area = document.getElementById('postContent');
+    const count = document.getElementById('charCount');
+    if(area) {
+        area.addEventListener('input', () => {
+            count.innerText = `${area.value.length} / 2500`;
+        });
+    }
+
+    function openModal(button, postId) {
+        const title = button.getAttribute('data-title');
+        const content = document.getElementById('store-' + postId).innerText;
+        
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerText = content;
+        document.getElementById('postModal').style.display = "block";
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function closeModal() {
+        document.getElementById('postModal').style.display = "none";
+        document.body.style.overflow = 'auto';
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('postModal');
+        if (event.target == modal) closeModal();
+    }
+</script>
 
 <%- include('partials/footer') %>
